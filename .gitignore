@@ -131,4 +131,6 @@ dmypy.json
 #virtualenv
 bin/*
 .idea*
+pyvenv.cfgdb.sqlite3
+geckodriver.log
 pyvenv.cfg
