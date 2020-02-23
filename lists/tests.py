@@ -8,11 +8,7 @@ from lists.models import Item
 
 class HomePageTest(TestCase):
 
-    def test_root_url_resolce_to_home_page_view(self):
-        found = resolve('/')
-        self.assertEqual(found.func, home_page)
-
-    def test_home_page_returns_correct_html(self):
+    def test_uses_home_template(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
@@ -28,25 +24,12 @@ class HomePageTest(TestCase):
         new_list_item = 'A new list item'
         response = self.client.post('/', data={'item_text': new_list_item})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], "/")
+        self.assertEqual(response['location'], "/lists/the-only-list-in-the-world/")
 
     def test_only_saves_items_when_necessary(self):
         self.client.get('/')
         self.assertEqual(Item.objects.count(), 0)
 
-    def test_displays_all_list_items(self):
-        # Given two saved objects
-        first_item = 'item 1'
-        second_item = 'item 2'
-        Item.objects.create(text=first_item)
-        Item.objects.create(text=second_item)
-
-        # When we get the home page
-        response = self.client.get("/")
-
-        # Then both items are in the response
-        self.assertIn(first_item, response.content.decode())
-        self.assertIn(second_item, response.content.decode())
 
 class ItemModelTest(TestCase):
 
@@ -66,3 +49,24 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, first_item.text)
         self.assertEqual(second_saved_item.text, second_item.text)
+
+
+class ListViewTest(TestCase):
+
+    def test_uses_list_template(self):
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_displays_all_items(self):
+        # Given two saved objects
+        first_item = 'item 1'
+        second_item = 'item 2'
+        Item.objects.create(text=first_item)
+        Item.objects.create(text=second_item)
+
+        # When we get the page
+        response = self.client.get("/lists/the-only-list-in-the-world/")
+
+        # Then: it contains the items
+        self.assertContains(response, first_item)
+        self.assertContains(response, second_item)
