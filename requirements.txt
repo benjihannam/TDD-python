@@ -3,7 +3,7 @@ chardet==3.0.4
 colorama==0.4.3
 configparser==4.0.2
 crayons==0.3.0
-Django==1.11.28
+Django==1.11.29
 idna==2.9
 pytz==2019.3
 requests==2.23.0
